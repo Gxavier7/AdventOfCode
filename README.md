@@ -14,11 +14,11 @@ A estrutura do repositório segue a organização dos dias do evento:
 - **📂 advent-of-code**  
   - **📂 day-01**  
     - `input.txt`: Arquivo de entrada para o desafio do dia 1  
-    - `solution.ts`: Solução implementada
+    - `solution.js`: Solução implementada
     - `README.md`: Detalhes específicos do dia 1  
   - **📂 day-02**  
     - `input.txt`: Arquivo de entrada para o desafio do dia 2  
-    - `solution.ts`: Solução implementada  
+    - `solution.js`: Solução implementada  
     - `README.md`: Detalhes específicos do dia 2  
   - `README.md`: Este arquivo
 
@@ -28,7 +28,6 @@ A estrutura do repositório segue a organização dos dias do evento:
 
 Este repositório contém soluções implementadas em algumas linguagens de programação, incluindo:  
 - **JavaScript** 📜
-- **TypeScript** 📜
 - Outras linguagens, conforme a inspiração surgir!  
 
 ---
@@ -37,5 +36,14 @@ Este repositório contém soluções implementadas em algumas linguagens de prog
 
 1. **Clone o Repositório:**  
    ```bash  
-   git clone https://github.com/seu-usuario/advent-of-code.git  
-   cd advent-of-code  
+   git clone https://github.com/Gxavier7/AdventOfCode.git
+   cd advent-of-code
+2. **Execute a solução do dia desejado:**
+   Altere o dia conforme a solução desejada
+   ```bash  
+   node /day-01/solution.js
+
+---
+
+🎅 **Feliz Advent of Code!**  
+Boa sorte nos desafios e aproveite a jornada! 🎄
