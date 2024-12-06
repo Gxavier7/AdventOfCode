@@ -1,28 +1,32 @@
---- Part Two ---
-Your analysis only confirmed what everyone feared: the two lists of location IDs are indeed very different.
+--- Day 2: Red-Nosed Reports ---
+Fortunately, the first location The Historians want to search isn't a long walk from the Chief Historian's office.
 
-Or are they?
+While the Red-Nosed Reindeer nuclear fusion/fission plant appears to contain no sign of the Chief Historian, the engineers there run up to you as soon as they see you. Apparently, they still talk about the time Rudolph was saved through molecular synthesis from a single electron.
 
-The Historians can't agree on which group made the mistakes or how to read most of the Chief's handwriting, but in the commotion you notice an interesting detail: a lot of location IDs appear in both lists! Maybe the other numbers aren't location IDs at all but rather misinterpreted handwriting.
+They're quick to add that - since you're already here - they'd really appreciate your help analyzing some unusual data from the Red-Nosed reactor. You turn to check if The Historians are waiting for you, but they seem to have already divided into groups that are currently searching every corner of the facility. You offer to help with the unusual data.
 
-This time, you'll need to figure out exactly how often each number from the left list appears in the right list. Calculate a total similarity score by adding up each number in the left list after multiplying it by the number of times that number appears in the right list.
+The unusual data (your puzzle input) consists of many reports, one report per line. Each report is a list of numbers called levels that are separated by spaces. For example:
 
-Here are the same example lists again:
+7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9
+This example data contains six reports each containing five levels.
 
-3   4
-4   3
-2   5
-1   3
-3   9
-3   3
-For these example lists, here is the process of finding the similarity score:
+The engineers are trying to figure out which reports are safe. The Red-Nosed reactor safety systems can only tolerate levels that are either gradually increasing or gradually decreasing. So, a report only counts as safe if both of the following are true:
 
-The first number in the left list is 3. It appears in the right list three times, so the similarity score increases by 3 * 3 = 9.
-The second number in the left list is 4. It appears in the right list once, so the similarity score increases by 4 * 1 = 4.
-The third number in the left list is 2. It does not appear in the right list, so the similarity score does not increase (2 * 0 = 0).
-The fourth number, 1, also does not appear in the right list.
-The fifth number, 3, appears in the right list three times; the similarity score increases by 9.
-The last number, 3, appears in the right list three times; the similarity score again increases by 9.
-So, for these example lists, the similarity score at the end of this process is 31 (9 + 4 + 0 + 0 + 9 + 9).
+The levels are either all increasing or all decreasing.
+Any two adjacent levels differ by at least one and at most three.
+In the example above, the reports can be found safe or unsafe by checking those rules:
 
-Once again consider your left and right lists. What is their similarity score?
+7 6 4 2 1: Safe because the levels are all decreasing by 1 or 2.
+1 2 7 8 9: Unsafe because 2 7 is an increase of 5.
+9 7 6 2 1: Unsafe because 6 2 is a decrease of 4.
+1 3 2 4 5: Unsafe because 1 3 is increasing but 3 2 is decreasing.
+8 6 4 4 1: Unsafe because 4 4 is neither an increase or a decrease.
+1 3 6 7 9: Safe because the levels are all increasing by 1, 2, or 3.
+So, in this example, 2 reports are safe.
+
+Analyze the unusual data from the engineers. How many reports are safe?
