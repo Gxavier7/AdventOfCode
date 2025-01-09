@@ -1,6 +1,4 @@
-const { log } = require("node:console");
 const fs = require("node:fs");
-const { release } = require("node:os");
 const path = require("node:path");
 
 const inputData = fs.readFileSync(path.join(__dirname, "input.txt"), "utf-8");
