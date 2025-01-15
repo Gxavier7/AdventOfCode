@@ -2,93 +2,160 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const inputData = fs.readFileSync(path.join(__dirname, "input.txt"), "utf-8");
-let labMap = inputData.split("\n").map(line => line.split(''))
+const labMapBackup = inputData.split("\n").map(line => line.split(''));
 
-const findPosition = () => {
-  for (let y = 0; y < labMap.length; y++) {
-    const line = labMap[y];
-    for (let x = 0; x < line.length; x++) {
-      const object = line[x];
-      
-      if (["^", ">", "<", "V"].includes(object)) return {x, y, object}
+const getMap = () => JSON.parse(JSON.stringify(labMapBackup));
+
+let guard;
+let guardFront;
+let visitedPositions = 0;
+let labMap = getMap()
+const maxLineNumbers = labMapBackup.length // 130
+const maxColumnsNumbers = labMapBackup[0].length //131
+const directions = ["^",">","V","<"]
+
+const getInitialPosition = () => {
+  for (let lineIndex = 0; lineIndex < labMapBackup.length; lineIndex++) {
+    const line = labMapBackup[lineIndex];
+    for (let columnIndex = 0; columnIndex < line.length; columnIndex++) {
+      const column = line[columnIndex];
+      if (directions.includes(column)) {
+        return {line: lineIndex, column: columnIndex, direction: column };
+      }
     }
   }
 }
 
-const getFrontPosition = (position) => {
- 
-
-  if(position.y - 1 < 0 || position.x + 2 == labMap[0].length || position.y + 2 > labMap.length || position.x - 1 < 0) {
-    labMap[currentPosition.y][currentPosition.x] = "X"
-    return {x: labMap[0].length, y: labMap.length, object: undefined}
-  }
+const existFrontPosition = (position) => {
   
-  switch (position.object) {
+  return (position.line < maxLineNumbers && position.column < maxColumnsNumbers && position.line >= 0 && position.column >= 0)
+}
+
+const existGuardPosition = (position) => {
+  return (position.line < maxLineNumbers - 1 && position.column < maxColumnsNumbers - 1 && position.line > 0 && position.column > 0)
+}
+
+const getGuardFront = () => {  
+  if (!existGuardPosition(guard)) {
+    return {line: -1, column: -1}
+  }
+
+  switch (guard.direction) {
     case "^":
-      return {...position, y: position.y - 1, object: labMap[position.y - 1][position.x]}
-      
-    case ">":
-      return {...position, x: position.x + 1, object: labMap[position.y][position.x + 1]}
-      
-    case "V":
-      return {...position, y: position.y + 1, object: labMap[position.y + 1][position.x]}
+      return {line: guard.line - 1, column: guard.column}
 
+    case ">":
+      return {line: guard.line, column: guard.column + 1}
+
+    case "V":
+      return {line: guard.line + 1, column: guard.column}
+      
     case "<":
-      return {...position, x: position.x - 1, object: labMap[position.y][position.x - 1]}
+      return {line: guard.line, column: guard.column -1}
   }
 }
 
-let currentPosition = findPosition()
-let frontPosition = getFrontPosition(currentPosition)
+const walk = (map, increaseLine = false) => {
+  const currentPosition = map[guard.line][guard.column]
 
+  if (increaseLine) {    
+    map[guard.line][guard.column] = currentPosition == "." ? "X" : currentPosition + "X"
+  } else{
+    map[guard.line][guard.column] = "X"
+  }
+  
+  guard = {...guardFront, direction: guard.direction}
+  guardFront = getGuardFront(guard)  
+}
 
-const rotateGuard = () => {
-  switch (currentPosition.object) {
+const rotate = () => {
+  switch (guard.direction) {
     case "^":
-      currentPosition.object = ">";
+      guard.direction = ">";
     break;
-      
     case ">":
-      currentPosition.object = "V";
-    break;
-    
+      guard.direction = "V";
+    break;  
     case "V":
-      currentPosition.object = "<";
+      guard.direction = "<";
     break;
-  
     case "<":
-      currentPosition.object = "^";
+      guard.direction = "^";
     break;
   }
 }
 
-const walk = () => {
-  if (frontPosition.object != "#"){
-    labMap[currentPosition.y][currentPosition.x] = "X"
-    currentPosition = {...frontPosition, object: currentPosition.object}
-  } 
-  else {
-    rotateGuard()
-  }  
-  
-  frontPosition = getFrontPosition(currentPosition)
-  return currentPosition
-}
+guard = getInitialPosition()
+guardFront = getGuardFront(guard)
 
-while (frontPosition.y < labMap.length || frontPosition.x < labMap[0].length) {
-  walk()
-}
-
-let visitedPositions = 0
-
-for (let y = 0; y < labMap.length; y++) {
-  const line = labMap[y];
-  for (let x = 0; x < line.length; x++) {
-    const object = line[x];
-    
-    if (object == "X") visitedPositions++
+while (existFrontPosition(guardFront)) {
+  if(labMap[guardFront.line][guardFront.column] != "#"){
+    walk(labMap)
+  } else {
+    rotate()
+    guardFront = getGuardFront(guard)
   }
 }
 
-console.log(`O guarda visitou ${visitedPositions} posições`);
+for (let lineIndex = 0; lineIndex < labMapBackup.length; lineIndex++) {
+  const line = labMap[lineIndex];
+  for (let columnIndex = 0; columnIndex < line.length; columnIndex++) {
+    const column = line[columnIndex];
+    
+    if (column == "X") {
+      visitedPositions++
+    }
+  }
+}
 
+
+
+console.log(`O guarda visitou ${visitedPositions + 1} posições`);
+
+// Part 2 
+
+let mapWithAllBarriers = getMap()
+let oneBarrierMap;
+let possibleBarriers = 0
+
+for (let line = 0; line < maxLineNumbers; line++) {
+  for (let column = 0; column < maxColumnsNumbers - 1; column++) {
+    oneBarrierMap = getMap()
+
+    if (!["#", "^"].includes(oneBarrierMap[line][column])) {
+      oneBarrierMap[line][column] = "O"
+      guard = getInitialPosition()      
+      guardFront = getGuardFront(guard)
+      let inLooping = false
+
+
+      while (existFrontPosition(guardFront) && !inLooping) {
+        
+        const guardfrontObject = oneBarrierMap[guardFront.line][guardFront.column]
+
+        if(!["#", "O"].includes(guardfrontObject)){
+          walk(oneBarrierMap, true)
+        } else {
+          rotate()
+          guardFront = getGuardFront(guard)
+        }
+
+        if (guardFront.line != -1) {
+          if (oneBarrierMap[guardFront.line][guardFront.column].length >= 6 ) {
+            mapWithAllBarriers[line][column] = "O"
+            inLooping = true
+            possibleBarriers++            
+          }
+        }
+        
+      }
+
+    }
+  }
+}
+
+
+let map2 = mapWithAllBarriers.map(row => row.join("")).join("\n");
+fs.writeFileSync(path.join(__dirname, "output.txt"), map2, "utf-8");
+
+console.log(`Existem ${possibleBarriers} possíveis barreiras para o guarda`);
